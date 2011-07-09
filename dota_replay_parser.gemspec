@@ -15,6 +15,10 @@ Gem::Specification.new do |s|
   s.rubyforge_project = "dota_replay_parser"
   
   s.add_runtime_dependency "nokogiri"
+  s.add_development_dependency "minitest"
+  s.add_development_dependency "purdytest"
+  s.add_development_dependency "bundler"
+  s.add_development_dependency "rake"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

@@ -1,41 +1,19 @@
 module DotaReplayParser
   class Convert
 
+	  SPEED = [nil, 'Slow', 'Normal', 'Fast']
 	  def self.speed(value)
-		  case value
-		  when 1
-			  "Slow"
-		  when 2
-			  "Normal"
-		  when 3
-			  "Fast"
-		  end
+		  SPEED[value]
 	  end
 
+	  VISIBILITY = ['Hide Terrain', 'Map Explored', 'Always Visible', 'Default']
 	  def self.visibility(value)
-		  case value
-		  when 0
-			  'Hide Terrain'
-		  when 1
-			  'Map Explored'
-		  when 2
-			  'Always Visible'
-		  when 3
-			  'Default'
-		  end
+		  VISIBILITY[value]
 	  end
 
+	  OBSERVERS = ['No Observers', 'Observers On', 'Full Observers', 'Referees']
 	  def self.observers(value)
-		  case value
-		  when 0 
-			  'No Observers'
-		  when 2
-			  'Observers On'
-		  when 3
-			  'Full Observers'
-		  when 4
-			  'Referees'
-		  end
+		  OBSERVERS[value]
 	  end
 
 	  def self.bool2num(value)
@@ -50,183 +28,120 @@ module DotaReplayParser
 		  return (value == 0) ? false : true
 	  end
 
+	  COLOR = ['red', 'blue', 'teal', 'purple', 'yellow', 'orange', 'green', 'pink', 'gray', 'lightblue', 'darkgreen', 'brown', 'observer']
 	  def self.color(value)
-
-   		case value
-		  when 0
-			  "red"
-		  when 1 
-			  "blue"
-		  when 2 
-			  "teal"
-		  when 3 
-			  "purple"
-		  when 4 
-			  "yellow"
-		  when 5 
-			  "orange"
-		  when 6 
-			  "green"
-		  when 7 
-			  "pink"
-		  when 8 
-			  "gray"
-		  when 9 
-			  "lightblue"
-		  when 10 
-			  "darkgreen"
-		  when 11
-			  "brown"
-		  when 12 
-			  "observer"
-		  end
-
+	    COLOR[value]
 	  end
 
 	  def self.race(value)
 		  case value
-			  when "ewsp", 4, 0x44
-				  "Sentinel"
-			  when "uaco", 8, 0x48
-				  "Scourge"
-			  else
-				  0
+			when "ewsp", 4, 0x44
+			  "Sentinel"
+			when "uaco", 8, 0x48
+			  "Scourge"
+			else
+			  0
 		  end
 	  end
 
+	  AI = ['Easy', 'Normal', 'Insane']
 	  def self.ai(value)
-		  case value
-			  when 0x00
-				  "Easy"
-			  when 0x01
-				  "Normal"
-			  when 0x02
-				  "Insane"
-		  end
+	    AI[value]
 	  end
 
 
 	  def self.select_mode(value)
 		  case value
-			  when 0x00
-				  "Team & race selectable"
-			  when 0x01
-				  "Team not selectable"
-			  when 0x03
-				  "Team & race not selectable"
-			  when 0x04
-				  "Race fixed to random"
-			  when 0xcc
-				  "Automated Match Making (ladder)"
+			when 0x00
+			  'Team & race selectable'
+			when 0x01
+			  'Team not selectable'
+			when 0x03
+			  'Team & race not selectable'
+			when 0x04
+			  'Race fixed to random'
+			when 0xcc
+			  'Automated Match Making (ladder)'
 		  end			
 	  end
 
 	  def self.chat_mode(value)
 		  case value
-			  when 0x00
-				  0		# All
-			  when 0x01
-				  1		# Allies
-			  when 0x02
-				  2		# Observers
-			  when 0xFE
-				  3		# Game paused
-			  when 0xFF
-				  4		# Game resumed
-			  else
-				  value-2 	# PVT
+			when 0x00
+			  0		# All
+			when 0x01
+			  1		# Allies
+			when 0x02
+			  2		# Observers
+			when 0xFE
+			  3		# Game paused
+			when 0xFF
+			  4		# Game resumed
+			else
+			  value-2 	# PVT
 		  end
 	  end
 
+	  ACTION = {
+	    'rightclick'    => 'Right click',
+	    'select'        => 'Select / deselect',
+	    'selecthotkey'  => 'Select group hotkey',
+	    'assignhotkey'  => 'Assign group hotkey',
+	    'ability'       => 'Use ability',
+	    'basic'         => 'Basic commands',
+	    'buildtrain'    => 'Build / train',
+	    'buildmenu'     => 'Enter build submenu',
+	    'subgroup'      => 'Enter subgroup',
+	    'heromenu'      => 'Enter hero\'s abilities submenu',
+	    'item'          => 'Give / drop item',
+	    'removeunit'    => 'Remove unit from queue',
+	    'esc'           => 'ESC pressed',
+	    'allyoptions'   => 'Adjust ally options',
+	    'sendresources' => 'Transfer resources',
+	    'signal'        => 'Minimap ping',
+	    'save'          => 'Save game',
+	  }
 	  def self.action(value)
-		  case value
-			  when "rightclick"
-				  "Right click"
-			  when "select"
-				  "Select / deselect"
-			  when "selecthotkey"
-				  "Select group hotkey"
-			  when "assignhotkey"
-				  "Assign group hotkey"
-			  when "ability"
-				  "Use ability"
-			  when "basic"
-				  "Basic commands"
-			  when "buildtrain"
-				  "Build / train"
-			  when "buildmenu"
-				  "Enter build submenu"
-			  when "subgroup"
-				  "Enter subgroup"
-			  when "heromenu"
-				  "Enter hero's abilities submenu"
-			  when "item"
-				  "Give / drop item"
-			  when "removeunit"
-				  "Remove unit from queue"
-			  when "esc"
-				  "ESC pressed"
-			  when "allyoptions"
-				  "Adjust ally options"
-			  when "sendresources"
-				  "Transfer resources"
-			  when "signal"
-				  "Minimap ping"
-			  when "save"
-				  "Save game"
-		  end
+		  ACTION[value]
 	  end
 
 	  def self.game_type(value)
 		  case value
-			  when 0x01
-				  "Ladder 1vs1/FFA"
-			  when 0x09
-				  "Custom game"
-			  when 0x0D
-				  "Single player/Local game"
-			  when 0x20
-				  "Ladder team game (AT/RT)"
-			  else
-				  "Unknown"
+			when 0x01
+			  'Ladder 1vs1/FFA'
+			when 0x09
+			  'Custom game'
+			when 0x0D
+			  'Single player/Local game'
+			when 0x20
+			  'Ladder team game (AT/RT)'
+			else
+			  'Unknown'
 		  end	
 	  end
 	
+	  COLOR_TO_DOTA_ID = {
+	    'blue'      => 1,
+	    'teal'      => 2,
+	    'purple'    => 3,
+	    'yellow'    => 4,
+	    'orange'    => 5,
+	    'pink'      => 6,
+	    'gray'      => 7,
+	    'lightblue' => 8,
+	    'darkgreen' => 9,
+	    'brown'     => 10,
+	  }
 	  def self.color2dotaid(value)
-		  case value
-
-			  when "blue"
-				  1
-			  when "teal"
-				  2
-			  when "purple"
-				  3
-			  when "yellow"
-				  4
-			  when "orange"
-				  5
-			  when "pink"
-				  6
-			  when "gray"
-				  7
-			  when "lightblue"
-				  8
-			  when "darkgreen"
-				  9
-			  when "brown"
-				  10
-			  else
-				  0
-
-		  end
+		  COLOR_TO_DOTA_ID[value] || 0
 	  end
 	
 	  def self.item(value, xml)
-				  if value.empty? || !(xml.data_map[value])
-					  false
-				  else
-					  xml.data_map[value]
-				  end
+      if value.empty? || !(xml.data_map[value])
+        false
+      else
+        xml.data_map[value]
+      end
 	  end
 	
 	  def self.time(value)
