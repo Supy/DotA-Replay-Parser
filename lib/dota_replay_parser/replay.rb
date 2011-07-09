@@ -1224,9 +1224,9 @@ module DotaReplayParser
 		  if matches.size < 4
 			  return DEFAULT_XML_MAP
 		  else
-			  @game[:dota_major] = matches[1]
-			  @game[:dota_minor] = matches[2]
-			  @game[:dota_subversion] = matches[3]
+			  @game[:dota_major] = matches[1].to_i
+			  @game[:dota_minor] = matches[2].to_i
+			  @game[:dota_subversion] = matches[3].to_i
 			
 
 			  # Check if file version exists

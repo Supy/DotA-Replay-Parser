@@ -8,7 +8,7 @@ module DotaReplayParser
 
 	
 	  def initialize(filename)
-		  f = File.open(filename)
+		  f = File.open(File.join(File.dirname(__FILE__), "maps", filename))
 		  doc = Nokogiri::Slop(f).document.html.body
 		  f.close
 		
