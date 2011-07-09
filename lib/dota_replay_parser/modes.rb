@@ -1,3 +1,12 @@
+##
+# DotA Replay Parser
+# Authors: Justin Cossutti (justin.cossutti@gmail.com), Tim Sjoeberg
+# Date: 09/07/11
+#
+# Based on various works by:
+# Seven, Julas, Rush4Hire, esby and Rachmadi
+##
+
 module DotaReplayParser
   class GenericMode
 	  attr_accessor :short_name, :full_name

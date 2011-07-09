@@ -1,3 +1,12 @@
+##
+# DotA Replay Parser
+# Authors: Justin Cossutti (justin.cossutti@gmail.com), Tim Sjoeberg
+# Date: 09/07/11
+#
+# Based on various works by:
+# Seven, Julas, Rush4Hire, esby and Rachmadi
+##
+
 require 'zlib'
 require 'dota_replay_parser/convert.rb'
 require 'dota_replay_parser/xml2dota.rb'
