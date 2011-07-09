@@ -1,8 +1,8 @@
-require "zlib"
-require_relative "convert.rb"
-require_relative "xml2dota.rb"
-require_relative "modes.rb"
-require_relative "classes.rb"
+require 'zlib'
+require 'dota_replay_parser/convert.rb'
+require 'dota_replay_parser/xml2dota.rb'
+require 'dota_replay_parser/modes.rb'
+require 'dota_replay_parser/classes.rb'
 
 
 class Replay 

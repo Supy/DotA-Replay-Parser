@@ -13,6 +13,8 @@ Gem::Specification.new do |s|
   s.description = %q{Pulls various information from the replay files}
 
   s.rubyforge_project = "dota_replay_parser"
+  
+  s.add_runtime_dependency "nokogiri"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

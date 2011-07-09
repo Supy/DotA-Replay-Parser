@@ -1,4 +1,4 @@
-require "nokogiri"
+require 'nokogiri'
 
 class Xml2dota
 	
