@@ -1,6 +1,6 @@
 ##
 # DotA Replay Parser
-# Authors: Justin Cossutti (justin.cossutti@gmail.com), Tim Sjoeberg
+# Authors: Justin Cossutti (justin.cossutti@gmail.com), Tim Sjoberg
 # Date: 09/07/11
 #
 # Based on various works by:
