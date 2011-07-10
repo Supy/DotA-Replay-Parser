@@ -423,10 +423,7 @@ module DotaReplayParser
 				  chat = {}
 				  chat[:mode] = "QUIT"
 				  chat[:text] = "Finished"
-
-
-
-				  chat[:time] = @time
+				  chat[:time] = Convert.time(@time)
 				  chat[:player_name] = @players[temp[:player_id]][:name]
 				  @chat << chat				
 				
@@ -930,27 +927,27 @@ module DotaReplayParser
 							  if key =~ /AA_Total([0-9]{1,2})/
 								  pid = @slot_to_player_map[$1.to_i]
 								  if @stats[pid]
-									  @stats[pid].aa_total = value
+									  @stats[pid].aa_total = value.first
 								  end
 							  elsif key =~ /AA_Hits([0-9]{1,2})/								
 								  pid = @slot_to_player_map[$1.to_i]
 								  if @stats[pid]
-									  @stats[pid].aa_hits = value
+									  @stats[pid].aa_hits = value.first
 								  end								
 							  #Pudge Hooks
 							  elsif key =~ /HA_Total([0-9]{1,2})/
 								  pid = @slot_to_player_map[$1.to_i]
 								  if @stats[pid]
-									  @stats[pid].ha_total = value
+									  @stats[pid].ha_total = value.first
 								  end
-							  elsif key =~ /HA_hits([0-9]{1,2})/
+							  elsif key =~ /HA_Hits([0-9]{1,2})/
 								  pid = @slot_to_player_map[$1.to_i]
 								  if @stats[pid]
-									  @stats[pid].ha_hits = value
+									  @stats[pid].ha_hits = value.first
 								  end
 							  # Runes
 							  elsif key =~ /RuneUse([0-9]{1,2})/
-								  pid = @slot_to_player_map[value]
+								  pid = @slot_to_player_map[value.first]
 								  if @stats[pid]
 									  @stats[pid].runes_used += 1
 								  end								
