@@ -258,13 +258,9 @@ module DotaReplayParser
 		  @game[:full_shared_unit_control] = Convert.num2bool(temp[3].ord & 1)
 		  @game[:random_races] = Convert.num2bool(temp[3].ord & 2)
 
-
-		  # TODO: Finish & fix these things that are incorrect =/
-
 		  if Convert.num2bool(temp[3].ord & 64)
 			  @game[:observers] = Convert.observers(4)
-		  end
-		
+		  end		
 
 		  temp = temp[13..-1].split(0.chr)
 		  @game[:creator] = temp[1]
@@ -501,12 +497,8 @@ module DotaReplayParser
 					  value = Convert.item(item_id, @xml)
 					
 					  if !value
-						  self.increment_action!(player_id, :ability)
-						
-						  # Irrelevant to dota
-						  if action_block[n+2].ord == 0x33 and action_block[n+3].ord == 0x02
-							  # TODO: Add Destroyer stuff from reshine.php
-						  end
+						  self.increment_action!(player_id, :ability)						
+						  # Destroyers code removed - irrelevant to dota
 					  else
 						  self.increment_action!(player_id, :buildtrain)
 						
@@ -573,13 +565,16 @@ module DotaReplayParser
 																
 								  if !@stats[pid]
 									  @preannounce_skill[pid] = {:skill_data => value, :time => @time, :hero_id => hero_id}
+
 								  # Player is skilling, but no hero set yet.
-                  # Save the Skill Data and Time, and try to add the skill on cleanup
+					                    # Save the Skill Data and Time, and try to add the skill on cleanup
 								  elsif !@stats[pid].is_hero_set?
 									  @stats[pid].add_delayed_skill!(value, @time, hero_id)
+
 								  # If skill-to-hero is the same as player's hero or common attribute skill the hero
 								  elsif value.id == "A0NR" or hero_name == "Common" or hero_name == @stats[pid].hero.name
 									  @stats[pid].hero.set_skill!(value, @time)
+
 								  # Otherwise assume the player's skilling a Hero not owned by him
 								  else
 									  if @activated_heroes[hero_name]
@@ -593,14 +588,15 @@ module DotaReplayParser
 								  end
 								
 							  when "error"
-								  raise "Error: unknown skill"
-								
+								  raise "Error: unknown SkillID: #{value}"
+							  else
+								  raise "Unknown ItemID: #{value}."
 								
 						  end # End case
 						
 						  @players[player_id][:last_time] = @time
 						  @players[player_id][:last_itemid] = item_id
-						  # TODO: Add other when's
+						  
 						
 					  end
 
@@ -700,7 +696,7 @@ module DotaReplayParser
 
 					  self.increment_action!(player_id, :assignhotkey)
 					
-					  # TODO: Left out group hotkeys.
+					  # Left out group hotkeys - irrelevant to DotA.
 
 					  temp = {}
 					  temp[:group], temp[:num] = action_block[(n+1), 3].unpack("CS")						
@@ -929,7 +925,6 @@ module DotaReplayParser
 					  end
 
 					  if mission_key == "Data"
-
 							  # These all use the slot id and not dota ID
 							  # POTM Arrows
 							  if key =~ /AA_Total([0-9]{1,2})/
@@ -955,7 +950,7 @@ module DotaReplayParser
 								  end
 							  # Runes
 							  elsif key =~ /RuneUse([0-9]{1,2})/
-								  pid = @slot_to_player_map[$1.to_i]
+								  pid = @slot_to_player_map[value]
 								  if @stats[pid]
 									  @stats[pid].runes_used += 1
 								  end								
@@ -1189,6 +1184,8 @@ module DotaReplayParser
 		  @stats.each do |pid, player|
 			  player.process_delayed_skills!
 		  end
+
+		# TODO: Add remaining cleanup code for handling player switch.
 		
 	  end
 
@@ -1226,9 +1223,13 @@ module DotaReplayParser
 		  # Strip the directories and extension off the file name
 		  map_name = map_name[(map_name.rindex("\\")+1..-1)]
 		  map_name = map_name[0..-5]
-		
+
 		  matches = /([0-9]{1,1})\.([0-9]{1,2})([a-zA-Z]{0,1})/.match(map_name)
 		
+		  unless matches
+			raise "Not a DotA replay."
+		  end
+
 		  # Use the default map if we cannot determine which map it is
 		  if matches.size < 4
 			  return DEFAULT_XML_MAP
