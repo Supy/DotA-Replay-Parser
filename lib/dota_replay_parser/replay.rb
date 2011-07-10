@@ -27,7 +27,10 @@ module DotaReplayParser
 	  attr_accessor :game, :players, :observers, :chat, :bans, :stats, :extra
 
 	
-	  def initialize(filename)
+	  def initialize(filename, parse_actions = true)
+	  
+	    # Make this optional for now to speed up parsing.
+	    @parse_actions = parse_actions
 		
 		  @max_datablock = 1500
 		  @retraining_time = 15000
@@ -266,9 +269,10 @@ module DotaReplayParser
 		  @game[:creator] = temp[1]
 		  @game[:map] = temp[0]
 		
-		  map_name = self.get_map_details(@game[:map])
-		
-		  @xml = Xml2dota.new(map_name)		
+		  if @parse_actions
+  		  map_name = self.get_map_details(@game[:map])		
+  		  @xml = Xml2dota.new(map_name)		
+  		end
 
 
 		  @game[:slots] =  @data.unpack("L")
@@ -362,7 +366,7 @@ module DotaReplayParser
 				  end
 
 			
-				  if temp[:length] > 2
+				  if @parse_actions and temp[:length] > 2
 					  self.parse_actions!(@data[5, (temp[:length]-2)], temp[:length]-2)
 				  end
 
