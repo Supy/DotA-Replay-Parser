@@ -17,7 +17,7 @@ module DotaReplayParser
 
 	
 	  def initialize(filename)
-		  f = File.open(File.join(File.dirname(__FILE__), "maps", filename))
+		  f = File.open(filename)
 		  doc = Nokogiri::Slop(f).document.html.body
 		  f.close
 		
@@ -38,7 +38,7 @@ module DotaReplayParser
 						  item.art.content,
 						  item.comment.content,
 						  item.cost.content,
-						  item.id.content,
+						  item.itemid.content,
 						  item.propernames.content,
 						  item.relatedto.content,
 						  type
@@ -53,7 +53,7 @@ module DotaReplayParser
 						  item.art.content,
 						  item.comment.content,
 						  item.cost.content,
-						  item.id.content,
+						  item.itemid.content,
 						  item.propernames.content,
 						  item.relatedto.content,
 						  type
@@ -74,7 +74,7 @@ module DotaReplayParser
 						  item.art.content,
 						  item.comment.content,
 						  item.cost.content,
-						  item.id.content,
+						  item.itemid.content,
 						  item.propernames.content,
 						  item.relatedto.content,
 						  type

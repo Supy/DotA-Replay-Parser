@@ -17,8 +17,8 @@ module DotaReplayParser
   class Replay 
 	
 	  DEFAULT_XML_MAP = "dota.allstars.v6.70.xml"
-	  XML_MAP_BASE_NAME = "dota.allstars.v"		
-	  MAPS_FOLDER = "maps"
+	  XML_MAP_BASE_NAME = "dota.allstars.v"
+	  MAPS_FOLDER = "maps"		
 	
 	  NUM_OF_PICKS = 10
 	  NUM_OF_BANS = 4
@@ -167,11 +167,10 @@ module DotaReplayParser
 		  @players[pid][:initiator] = self.true?(!temp[:record_id])
 
 
-
 		  i = 0
-		  while(@data[i] != 0.chr) do		
-			  @players[pid][:name] << @data[i]
-			  i=i+1
+		  while (@data[i] != 0.chr) and (@data[i] != 0) do	
+			@players[pid][:name] << @data[i]
+			i=i+1
 		  end
 
 		  # Save for handling SP
@@ -210,7 +209,7 @@ module DotaReplayParser
 
 		  @game[:name] = ""
 		  i = 0
-		  while(@data[i] != "\x00") do
+		  while(@data[i] != 0.chr) and (@data[i] != 0) do
 			  @game[:name] << @data[i]
 			  i=i+1
 		  end
@@ -223,7 +222,7 @@ module DotaReplayParser
 		  temp = ""
 		  i = 0
 	
-		  while (@data[i] != 0.chr) do
+		  while (@data[i] != 0.chr) and (@data[i] != 0) do
 			  if i%8 == 0
 				  mask = @data[i].ord
 			  else
@@ -267,7 +266,7 @@ module DotaReplayParser
 		  @game[:map] = temp[0]
 		
 		  map_name = self.get_map_details(@game[:map])
-		
+		print "Loading map: #{map_name}\n"
 		  @xml = Xml2dota.new(map_name)		
 
 
@@ -281,7 +280,7 @@ module DotaReplayParser
 		  @data = @data[8..-1]
 
 		  # Player List
-		  while (@data[0] == "\x16") do
+		  while (@data[0] == "\x16") or (@data[0] == 22) do
 			  self.load_player!
 			  @data = @data[4..-1]
 		  end
@@ -794,7 +793,7 @@ module DotaReplayParser
 					  n = n+9
 				
 					  str = ""
-					  while(action_block[n] != 0.chr) do
+					  while(action_block[n] != 0) and (action_block[n] != 0.chr) do
 						  str << action_block[n]
 						  n = n+1
 					  end
@@ -858,7 +857,7 @@ module DotaReplayParser
 				  when 0x06
 			
 				
-					  while(action_block[n] != 0.chr) do
+					  while(action_block[n] != 0) and (action_block[n] != 0.chr) do
 						  n = n+1
 					  end
 					
@@ -885,21 +884,21 @@ module DotaReplayParser
 					  key = ""
 					  value = ""
 
-					  while (n < block_length and action_block[n] != 0.chr) do
+					  while (n < block_length) and (action_block[n] != 0) and (action_block[n] != 0.chr) do
 						  game_cache << action_block[n]
 						  n = n + 1
 					  end	
 
 					  n = n+1
 
-					  while (n < block_length and action_block[n] != 0.chr) do
+					  while (n < block_length) and (action_block[n] != 0) and (action_block[n] != 0.chr) do
 						  mission_key << action_block[n]
 						  n = n+1
 					  end	
 
 					  n = n+1
 
-					  while (n < block_length and action_block[n] != 0.chr) do
+					  while (n < block_length) and (action_block[n] != 0) and (action_block[n] != 0.chr) do
 						  key << action_block[n]
 						  n = n+1						
 					  end	
@@ -1089,7 +1088,7 @@ module DotaReplayParser
 						  case key[0]
 							
 
-							  when "i" #ID
+							  when 105, "i" #ID - Ruby 1.8.7 doesnt check alternate combinations
 								  # Value seems to be in array form
 								  pid = value.first
 								
@@ -1229,20 +1228,23 @@ module DotaReplayParser
 
 		  # Use the default map if we cannot determine which map it is
 		  if matches.size < 4
-			  return DEFAULT_XML_MAP
+			  File.join(File.dirname(__FILE__), MAPS_FOLDER, DEFAULT_XML_MAP)
 		  else
 			  @game[:dota_major] = matches[1].to_i
 			  @game[:dota_minor] = matches[2].to_i
 			  @game[:dota_subversion] = matches[3].to_i
-			
 
+			  filename_1 = File.join(File.dirname(__FILE__), MAPS_FOLDER, "#{XML_MAP_BASE_NAME}#{@game[:dota_major]}.#{@game[:dota_minor]}#{@game[:dota_subversion]}.xml")
+			  filename_2 = File.join(File.dirname(__FILE__), MAPS_FOLDER, "#{XML_MAP_BASE_NAME}#{@game[:dota_major]}.#{@game[:dota_minor]}.xml")
+			
+			
 			  # Check if file version exists
-			  if File.exists?("#{MAPS_FOLDER}/#{XML_MAP_BASE_NAME}#{@game[:dota_major]}.#{@game[:dota_minor]}#{@game[:dota_subversion]}.xml")
-				  "#{MAPS_FOLDER}/#{XML_MAP_BASE_NAME}#{@game[:dota_major]}.#{@game[:dota_minor]}#{@game[:dota_subversion]}.xml"
+			  if File.exists?(filename_1)
+				  filename_1
 				
 			  # Otherwise check if file version without the subversion (e.g. b, c, d...) exists
-			  elsif File.exists?("#{MAPS_FOLDER}/#{XML_MAP_BASE_NAME}#{@game[:dota_major]}.#{@game[:dota_minor]}.xml")
-				  "#{MAPS_FOLDER}/#{XML_MAP_BASE_NAME}#{@game[:dota_major]}.#{@game[:dota_minor]}.xml"
+			  elsif File.exists?(filename_2)
+				  filename_2
 				
 			  # Do not support maps older then 6.59
 			  elsif @game[:dota_major] < 6 || (@game[:dota_major] == 6 and @game[:dota_minor] < 59)
@@ -1250,7 +1252,7 @@ module DotaReplayParser
 				  false
 			  else
 			  # Otherwise use the default map
-				  DEFAULT_XML_MAP				
+				  File.join(File.dirname(__FILE__), MAPS_FOLDER, DEFAULT_XML_MAP)				
 			  end
 		  end
 		
